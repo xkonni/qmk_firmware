@@ -67,6 +67,41 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
+static uint16_t timeout_threshold = 5;  // timeout in minutes
+static uint16_t timeout_timer = 0;
+static uint16_t timeout_counter = 0;    // in minute intervals
+
+void timeout_reset_timer(void) {
+  timeout_timer = timer_read();
+  timeout_counter = 0;
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    default:
+      if (record->event.pressed) {
+#ifdef RGB_MATRIX_ENABLE
+        rgb_matrix_enable();
+#endif
+        timeout_reset_timer();
+      }
+      break;
+  }
+  return true;
+};
+
+void matrix_scan_user(void) {
+  if (timer_elapsed(timeout_timer) >= 60000) { // 1 minute tick
+    timeout_counter++;
+    timeout_timer = timer_read();
+  }
+#ifdef RGB_MATRIX_ENABLE
+  if (timeout_counter >= timeout_threshold) {
+    rgb_matrix_disable_noeeprom();
+  }
+#endif
+}
+
 #ifdef ENCODER_ENABLE
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (clockwise) {
