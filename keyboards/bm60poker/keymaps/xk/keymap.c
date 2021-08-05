@@ -18,8 +18,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_NO, RGB_VAD, RGB_TOG, RGB_VAI, RGB_M_P, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
       KC_NO, MO(2), KC_NO, KC_TRNS, KC_NO, KC_TRNS, MO(2), KC_NO),
   [2] = LAYOUT_60_ansi(
-      RESET, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, RESET,
       KC_NO, RGB_MOD, RGB_HUI, RGB_SAI, RGB_SPI, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
       KC_NO, RGB_RMOD, RGB_HUD, RGB_SAD, RGB_SPD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
       KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO),
@@ -31,3 +31,66 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO)
 };
 
+static uint16_t timeout_threshold = 5;  // timeout in minutes
+static uint16_t timeout_timer = 0;
+static uint16_t timeout_counter = 0;    // in minute intervals
+
+void timeout_reset_timer(void) {
+  timeout_timer = timer_read();
+  timeout_counter = 0;
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    default:
+      if (record->event.pressed) {
+#ifdef RGB_MATRIX_ENABLE
+        rgb_matrix_enable();
+#endif
+        timeout_reset_timer();
+      }
+      break;
+  }
+  return true;
+};
+
+void matrix_scan_user(void) {
+  if (timer_elapsed(timeout_timer) >= 60000) { // 1 minute tick
+    timeout_counter++;
+    timeout_timer = timer_read();
+  }
+#ifdef RGB_MATRIX_ENABLE
+  if (timeout_counter >= timeout_threshold) {
+    rgb_matrix_disable_noeeprom();
+  }
+#endif
+}
+
+#ifdef RGB_MATRIX_ENABLE
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+  switch(get_highest_layer(layer_state)){  // special handling per layer
+    case 0:
+      // don't change default behavior
+      break;
+    case 1:
+      rgb_matrix_set_color(0, RGB_GOLD);
+      break;
+    case 2:
+      rgb_matrix_set_color(0, RGB_GREEN);
+      break;
+    case 3:
+      rgb_matrix_set_color(0, RGB_RED);
+      break;
+    default:
+      break;
+  }
+}
+
+void suspend_power_down_user(void) {
+  rgb_matrix_set_suspend_state(true);
+}
+
+void suspend_wakeup_init_user(void) {
+  rgb_matrix_set_suspend_state(false);
+}
+#endif
