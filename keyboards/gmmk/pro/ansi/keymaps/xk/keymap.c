@@ -120,11 +120,11 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
       // don't change default behavior
       break;
     case 1:
-      rgb_matrix_set_color(LED_ESC, RGB_MAGENTA);
+      rgb_matrix_set_color(LED_ESC, RGB_GOLD);
       for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LSIDE); i++)
-        rgb_matrix_set_color(LED_LIST_LSIDE[i], RGB_MAGENTA);
+        rgb_matrix_set_color(LED_LIST_LSIDE[i], RGB_GOLD);
       for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_RSIDE); i++)
-        rgb_matrix_set_color(LED_LIST_RSIDE[i], RGB_MAGENTA);
+        rgb_matrix_set_color(LED_LIST_RSIDE[i], RGB_GOLD);
       break;
     case 2:
       rgb_matrix_set_color(LED_ESC, RGB_RED);
@@ -134,7 +134,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         rgb_matrix_set_color(LED_LIST_RSIDE[i], RGB_RED);
       break;
     case 3:
-      rgb_matrix_set_color(LED_ESC, RGB_RED);
+      rgb_matrix_set_color(LED_ESC, RGB_GREEN);
       for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LSIDE); i++)
         rgb_matrix_set_color(LED_LIST_LSIDE[i], RGB_GREEN);
       for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_RSIDE); i++)
