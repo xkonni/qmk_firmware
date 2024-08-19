@@ -90,6 +90,7 @@
             "typing_heatmap": true,
             "digital_rain": true,
             "solid_reactive_simple": true,
+            "solid_reactive": true,
             "solid_reactive_multiwide": true,
             "solid_reactive_multinexus": true,
             "splash": true,
