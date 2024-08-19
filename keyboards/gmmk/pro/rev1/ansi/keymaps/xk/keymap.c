@@ -79,7 +79,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
-void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   switch(get_highest_layer(layer_state)){  // special handling per layer
     case 0:
       // don't change default behavior
@@ -105,9 +105,8 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
       for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_RSIDE); i++)
           rgb_matrix_set_color(LED_LIST_RSIDE[i], RGB_GREEN);
       break;
-    default:
-      break;
   }
+  return false;
 }
 
 void suspend_power_down_user(void) {
